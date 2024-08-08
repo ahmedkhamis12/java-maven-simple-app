@@ -4,7 +4,8 @@ pipeline{
 tools{
     maven 'maven-3.6'
 }
-    stage('init'){
+    stages{
+stage('init'){
         steps{
             script{
                 gv= load "script.groovy"
@@ -37,5 +38,7 @@ stage('deployApp') {
 
     }
 } 
+    }
+    
     }
 }
