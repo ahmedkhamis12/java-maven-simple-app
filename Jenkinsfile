@@ -1,41 +1,33 @@
-def gv
-    
+// using parameters
+
 pipeline {
     agent any
-    tools {
-        maven 'maven-3.6' //from the tools configartion
+    parameters {
+        // string(name: 'VERSION', defaultValue: '1.0.0', description: 'version to deploy')
+        choice(name: 'VERSION', choices: ['1.0.0', '1.0.1', '1.0.2'], description: 'choice a specific version')
+        booleanParam(name: 'executeTests', defaultValue: true, description: 'execute/skip test stage')
     }
     stages {
-        stage("init") {
+        stage('build') {
             steps {
-                script {
-                    gv = load "script.groovy"
-                }
+                echo 'Building the application ...'
             }
         }
-        stage("build jar") {
-            steps {
-                script {
-                    echo "building jar"
-                    //gv.buildJar()
+        stage('test') {
+            when {
+                expression {
+                    params.executeTests == true //no need to use == true   //you can also use !params.executeTests
                 }
             }
-        }
-        stage("build image") {
             steps {
-                script {
-                    echo "building image"
-                    //gv.buildImage()
-                }
+                echo 'Testing the application ...'
             }
         }
-        stage("deploy") {
+        stage('deploy') {
             steps {
-                script {
-                    echo "deploying"
-                    //gv.deployApp()
-                }
+                echo 'Deploying the application ...'
+                echo "Deploying version ${params.VERSION}"
             }
-        }
-    }   
+        }        
+    }
 }
