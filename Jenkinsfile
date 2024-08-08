@@ -1,5 +1,5 @@
 // using parameters
-
+def groovyfile
 pipeline {
     agent any
     parameters {
@@ -8,26 +8,49 @@ pipeline {
         booleanParam(name: 'executeTests', defaultValue: true, description: 'execute/skip test stage')
     }
     stages {
-        stage('build') {
+        stage('init') {
             steps {
-                echo 'Building the application ...'
+                script{
+                    groovyFile = load 'script.groovy'
+                }
+            }
+        }
+        stage('build') {
+            
+            steps {
+                script{
+                    groovyFile.buildApp()
+                }
             }
         }
         stage('test') {
-            when {
-                expression {
-                    params.executeTests == true //no need to use == true   //you can also use !params.executeTests
+            when{
+                expression{
+                    params.executeTests == true //no need to use == true // you can also use !params.executeTests
                 }
             }
+
             steps {
-                echo 'Testing the application ...'
+                script{
+                    groovyFile.testApp()
+                }
             }
-        }
+        }    
+
         stage('deploy') {
-            steps {
-                echo 'Deploying the application ...'
-                echo "Deploying version ${params.VERSION}"
+            input{
+                message "select an Env to deploy the application"
+                ok "Okay"
+                parameters{
+                    choice(name: 'Env', choices:['Dev','Stagging','Production'], description: 'pick an env to deploy the application')
+                }
             }
-        }        
+            steps{
+                script{
+                    groovyFile.deployApp()
+                    echo "Deploying the version ${params.VERSION} to env ${ENV}"
+                }
+            }
+        }    
     }
 }
