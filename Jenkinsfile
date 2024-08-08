@@ -5,33 +5,30 @@ pipeline {
         maven 'maven-3.6'
     }
     stages {
-        stage("init") {
+        stage('init') {
             steps {
                 script {
                     gv = load "script.groovy"
                 }
             }
         }
-        stage("build jar") {
+        stage('build jar') {
             steps {
                 script {
-                    echo "building jar"
                     gv.buildJar()
                 }
             }
         }
-        stage("build image") {
+        stage('build image') {
             steps {
                 script {
-                    echo "building image"
                     gv.buildImage()
                 }
             }
         }
-        stage("deploy") {
+        stage('deploy') {
             steps {
                 script {
-                    echo "deploying"
                     gv.deployApp()
                 }
             }
